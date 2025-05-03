@@ -6,15 +6,15 @@ Course::Course(std::string courseCode, std::vector<Assessment> assessments, bool
     this->isA5050Course = isA5050Course;
 }
 
-std::string Course::getCourseCode() {
+std::string Course::getCourseCode() const {
     return courseCode;
 }
 
-std::vector<Assessment> Course::getAllAssessments() {
+std::vector<Assessment> Course::getAllAssessments() const {
     return assessments;
 }
 
-bool Course::getIsA5050Course() {
+bool Course::getIsA5050Course() const {
     return isA5050Course;
 }
 

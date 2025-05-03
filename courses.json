@@ -1,0 +1,22 @@
+{
+    "courses": [
+        {
+            "assessments": [
+                {
+                    "grade": 34.0,
+                    "isComplete": false,
+                    "name": "gay",
+                    "weight": 50.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "name": "gay2",
+                    "weight": 24.0
+                }
+            ],
+            "courseCode": "ELE632",
+            "isA5050Course": true
+        }
+    ]
+}

@@ -19,9 +19,9 @@ public:
     Course(std::string courseCode, std::vector<Assessment> assessments, bool isA5050Course);
 
     //getter
-    std::string getCourseCode();
-    std::vector<Assessment> getAllAssessments();
-    bool getIsA5050Course();
+    std::string getCourseCode() const;
+    std::vector<Assessment> getAllAssessments() const;
+    bool getIsA5050Course() const;
 
     //setter
     void setCourseCode(std::string newCourseCode);
