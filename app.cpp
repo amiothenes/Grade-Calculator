@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
 #include "Course.h"
 #include "Assessment.h"
 #include "CourseManager.h"
@@ -52,14 +53,16 @@ void addNewCourse(CourseManager& manager) {
             std::cout << "\nAssessment #" << (i + 1) << std::endl;
             std::string name = getStringInput("Name: ");
             double weight = getInput<double>("Weight (%): ");
-            
-            char isComplete = getInput<char>("Is this assessment complete? (y/n): ");
+            bool isTheory = getInput<char>("Is this a theory assessment? (y/n for lab): ") == 'y';
+
+            bool isComplete = getInput<char>("Is this assessment complete? (y/n): ") == 'y';
+
             double grade = 0.0;
-            if (isComplete == 'y') {
+            if (isComplete) {
                 grade = getInput<double>("Grade received (%): ");
             }
             
-            Assessment newAssessment(name, weight, grade, isComplete == 'y');
+            Assessment newAssessment(name, weight, grade, isTheory, isComplete);
             newCourse.addAssessment(newAssessment);
         }
     }
@@ -90,6 +93,63 @@ void displayCourses(const CourseManager& manager) {
     }
 }
 
+void viewCourseDetails(CourseManager& manager) {
+    displayCourses(manager);
+    int courseCount = manager.getCourseCount();
+    
+    if (courseCount == 0) {
+        std::cout << "No courses to view. Please add a course first.\n";
+        return;
+    }
+
+    int choice;
+    bool validInput = false;
+    
+    while (!validInput) {
+        choice = getInput<int>("\nSelect course index number (1-" + std::to_string(courseCount) + "): ");
+        
+        if (choice >= 1 && choice <= courseCount) {
+            validInput = true;
+        } else {
+            std::cout << "Invalid selection. Please enter a number between 1 and " 
+                      << courseCount << ".\n";
+        }
+    }
+    
+    choice--;
+    Course& chosenCourse = manager.getCourse(choice);
+    const std::vector<Assessment> assessments = chosenCourse.getAllAssessments();
+    
+    std::cout << "\n === " << chosenCourse.getCourseCode() << " === \n";
+    std::cout << "Type: " << (chosenCourse.getIsA5050Course() ? "50/50 Course" : "Regular Course") << "\n";
+    std::cout << "Assessment Count: " << chosenCourse.getAssessmentCount() << "\n";
+    
+    if (chosenCourse.getAssessmentCount() > 0) {
+        std::cout << "\nAssessments:\n";
+        std::cout << "-----------------------------------------\n";
+        std::cout << "  #  | Name                | Weight | Grade | Status\n";
+        std::cout << "-----------------------------------------\n";
+        
+        for (int i = 0; i < chosenCourse.getAssessmentCount(); i++) {
+            const Assessment& assessment = assessments[i];
+            std::cout << "  " << (i + 1) << "  | ";
+            std::cout << std::left << std::setw(20) << assessment.getName() << " | ";
+            std::cout << std::right << std::setw(5) << assessment.getWeight() << "% | ";
+            
+            if (assessment.getIsComplete()) {
+                std::cout << std::setw(5) << assessment.getGrade() << "% | Complete";
+            } else {
+                std::cout << "  N/A  | Pending ";
+            }
+            std::cout << "\n";
+        }
+        
+        std::cout << "-----------------------------------------\n";
+        std::cout << "Overall grade: " << chosenCourse.calculateOverallGrade() << "% ";
+        std::cout << "(based on " << chosenCourse.getTotalWeight() << "% of total course weight)\n";
+    }
+}
+
 // Main menu function
 void showMainMenu(CourseManager& manager) {
     int choice;
@@ -101,7 +161,7 @@ void showMainMenu(CourseManager& manager) {
         std::cout << "3. View/edit course details\n";
         std::cout << "4. Delete course\n";
         std::cout << "5. Exit\n";
-        std::cout << "=======================\n";
+        std::cout << "==========================\n";
         
         choice = getInput<int>("Enter your choice: ");
         
@@ -121,7 +181,11 @@ void showMainMenu(CourseManager& manager) {
                 break;
                 
             case 3:
-                // Implement view/edit course
+                clearScreen();
+                viewCourseDetails(manager);
+                std::cout << "\nPress Enter to continue...";
+                std::cin.get();
+                break;
                 break;
                 
             case 4:

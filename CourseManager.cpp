@@ -101,6 +101,7 @@ bool CourseManager::saveToFile() const {
                 assessmentJson["name"] = assessment.getName();
                 assessmentJson["weight"] = assessment.getWeight();
                 assessmentJson["grade"] = assessment.getGrade();
+                assessmentJson["isTheory"] = assessment.getIsTheory();
                 assessmentJson["isComplete"] = assessment.getIsComplete();
                 
                 courseJson["assessments"].push_back(assessmentJson);
