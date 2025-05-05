@@ -1,3 +1,31 @@
 {
-
+    "courses": [
+        {
+            "assessments": [
+                {
+                    "grade": 90.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab",
+                    "weight": 40.0
+                },
+                {
+                    "grade": 90.0,
+                    "isComplete": true,
+                    "isTheory": true,
+                    "name": "Midterm",
+                    "weight": 30.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "isTheory": true,
+                    "name": "Exam",
+                    "weight": 30.0
+                }
+            ],
+            "courseCode": "ELE635",
+            "isA5050Course": true
+        }
+    ]
 }

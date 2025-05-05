@@ -1,4 +1,5 @@
 #include "Course.h"
+#include <cmath>
 
 Course::Course(std::string courseCode, std::vector<Assessment> assessments, bool isA5050Course) {
     this->courseCode = courseCode;
@@ -63,20 +64,66 @@ double Course::getTotalWeight() const {
 
 bool Course::isTotalWeightValid() const {
     double totalWeight = getTotalWeight();
-
-    return totalWeight > 0.0 && totalWeight <= 100.0 ? true : false;
+    return totalWeight == 100.0;
 }
 
 double Course::calculateOverallGrade() const {
-    double weightedSum = 0.0;
-    bool totalWeigthValidity = isTotalWeightValid();
+    double myGradesWeighted = 0.0;
+    double totalWeight = 0.0;
 
-    for (const Assessment& assessment : assessments) {
+    for(const Assessment& assessment : assessments) {
         if (assessment.getIsComplete()) {
-            weightedSum += assessment.getGrade() * assessment.getWeight();
+            myGradesWeighted += assessment.getGrade() * assessment.getWeight();
+            totalWeight += assessment.getWeight();
         }
     }
 
-    return totalWeigthValidity ? weightedSum : 0.0;
+    if (totalWeight == 0.0) {
+        return 0.0;
+    }
+
+    double result = myGradesWeighted / 100; //100 is total
+
+    return std::round(result * 100) / 100; //round two dec pts
+}
+
+double Course::calculateGradeSoFar() const {
+    double myGradesWeighted = 0.0;
+    double totalWeight = 0.0;
+
+    for(const Assessment& assessment : assessments) {
+        if (assessment.getIsComplete()) {
+            myGradesWeighted += assessment.getGrade() * assessment.getWeight();
+            totalWeight += assessment.getWeight();
+        }
+    }
+
+    if (totalWeight == 0.0) {
+        return 0.0;
+    }
+
+    double result = myGradesWeighted / totalWeight;
+
+    return std::round(result * 100) / 100; //round two dec pts
+}
+
+double Course::calculateSectionGradeSoFar(bool isTheory) const {
+    double myGradesWeighted = 0.0;
+    double totalWeight = 0.0;
+
+    for(const Assessment& assessment : assessments) {
+        if (assessment.getIsComplete() && assessment.getIsTheory() == isTheory) {
+            myGradesWeighted += assessment.getGrade() * assessment.getWeight();
+            totalWeight += assessment.getWeight();
+        }
+    }
+
+    if (totalWeight == 0.0) {
+        return 0.0;
+    }
+
+    double result = myGradesWeighted / totalWeight;
+
+    return std::round(result * 100) / 100; //round two dec pts
 }
 

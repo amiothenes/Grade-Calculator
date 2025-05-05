@@ -38,6 +38,9 @@ public:
     bool isTotalWeightValid() const;
     double calculateOverallGrade() const;
 
+    double calculateGradeSoFar() const;
+    double calculateSectionGradeSoFar(bool isTheory) const;
+
 };
 
 #endif

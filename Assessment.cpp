@@ -5,6 +5,7 @@ Assessment::Assessment(std::string name, double weight, double grade, bool isThe
     this->name = name;
     this->weight = weight;
     this->grade = grade;
+    this->isTheory = isTheory;
     this->isComplete = isComplete;
 }
 

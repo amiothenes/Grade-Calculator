@@ -68,9 +68,10 @@ bool CourseManager::loadFromFile() {
                 std::string name = assessmentJson["name"];
                 double weight = assessmentJson["weight"];
                 double grade = assessmentJson["grade"];
+                bool isTheory = assessmentJson["isTheory"];
                 bool isComplete = assessmentJson["isComplete"];
                 
-                Assessment assessment(name, weight, grade, isComplete);
+                Assessment assessment(name, weight, grade, isTheory, isComplete);
                 assessments.push_back(assessment);
             }
             
