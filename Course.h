@@ -41,6 +41,9 @@ public:
     double calculateGradeSoFar() const;
     double calculateSectionGradeSoFar(bool isTheory) const;
 
+    std::vector<Assessment> calculateRequiredGrades(double goal) const;
+    std::vector<Assessment> calculateWhatIf() const;
+
 };
 
 #endif

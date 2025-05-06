@@ -87,11 +87,201 @@ void displayCourses(const CourseManager& manager) {
                   << " (Assessments: " << course.getAssessmentCount() << ")";
                   
         // If there are completed assessments, show current grade
-        if (course.getTotalWeight() > 0) {
+        if (course.getTotalWeight() == 100) {
             std::cout << " - Current grade: " << course.calculateOverallGrade() << "%";
+        } else {
+            std::cout << " - My grade so far: " << course.calculateGradeSoFar() << "%";
         }
         std::cout << std::endl;
     }
+}
+
+void viewAssessmentsDetails(Course chosenCourse, std::vector<Assessment> assessments) {
+    bool is5050Course = chosenCourse.getIsA5050Course();
+
+    const int idWidth = 3;
+    const int nameWidth = 25;
+    const int weightWidth = 8;
+    const int gradeWidth = 8;
+    const int statusWidth = 10;
+
+    // Calculate total width for horizontal line
+    const int totalWidth = idWidth + 1 + nameWidth + 1 + weightWidth + 1 + gradeWidth + 1 + statusWidth + 12;
+
+    std::string horizontalLine(totalWidth, '-');
+
+    std::cout << "\nAssessments:\n";
+    std::cout << horizontalLine << "\n";
+
+    // Header row
+    if (is5050Course) {
+        // Display with section grade for 50/50 courses
+        double theoryGrade = chosenCourse.calculateSectionGradeSoFar(true);
+        std::cout << "| " << std::setw(idWidth) << std::left << "#"
+                  << " | " << std::setw(nameWidth-8) << std::left << "Theory" 
+                  << "(" << std::fixed << std::setprecision(2) << theoryGrade << "%)"
+                  << " | " << std::setw(weightWidth) << std::right << "Weight"
+                  << " | " << std::setw(gradeWidth) << std::right << "Grade"
+                  << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
+                  << "\n";
+    } else {
+        // Display without section grade for regular courses
+        std::cout << "| " << std::setw(idWidth) << std::left << "#"
+                  << " | " << std::setw(nameWidth) << std::left << "Theory" 
+                  << " | " << std::setw(weightWidth) << std::right << "Weight"
+                  << " | " << std::setw(gradeWidth) << std::right << "Grade"
+                  << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
+                  << "\n";
+    }
+    
+    std::cout << horizontalLine << "\n";
+    
+    // Data rows for theory section
+    for (int i = 0; i < chosenCourse.getAssessmentCount(); i++) {
+        const Assessment& assessment = assessments[i];
+
+        if (assessment.getIsTheory()) {
+
+            bool isComplete = assessment.getIsComplete();
+            
+            // Format ID column
+            std::cout << "| " << std::setw(idWidth) << std::left << (i + 1);
+            
+            // Format Name column
+            std::string name = assessment.getName();
+            if (name.length() > nameWidth) {
+                name = name.substr(0, nameWidth - 3) + "...";
+            }
+            std::cout << " | " << std::setw(nameWidth) << std::left << name;
+            
+            // Format Weight column
+            std::cout << " | " << std::setw(weightWidth - 1) << std::right << assessment.getWeight() << "%";
+            
+            // Format Grade column
+            if (isComplete) {
+                std::cout << " | " << std::setw(gradeWidth - 1) << std::right << assessment.getGrade() << "%";
+            } else {
+                std::cout << " | " << std::setw(gradeWidth) << std::right << "N/A";
+            }
+            
+            // Format Status column
+            std::cout << " | " << std::setw(statusWidth) << std::left 
+                    << (isComplete ? "Complete" : "Pending") << " |";
+            
+            std::cout << "\n";
+        }
+    }
+
+        // Header row
+        if (is5050Course) {
+            double labGrade = chosenCourse.calculateSectionGradeSoFar(false);
+            std::cout << "| " << std::setw(idWidth) << std::left << "#"
+                      << " | " << std::setw(nameWidth-8) << std::left << "Lab" 
+                      << "(" << std::fixed << std::setprecision(2) << labGrade << "%)"
+                      << " | " << std::setw(weightWidth) << std::right << "Weight"
+                      << " | " << std::setw(gradeWidth) << std::right << "Grade"
+                      << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
+                      << "\n";
+        } else {
+            std::cout << "| " << std::setw(idWidth) << std::left << "#"
+                      << " | " << std::setw(nameWidth) << std::left << "Lab" 
+                      << " | " << std::setw(weightWidth) << std::right << "Weight"
+                      << " | " << std::setw(gradeWidth) << std::right << "Grade"
+                      << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
+                      << "\n";
+        }
+
+        std::cout << horizontalLine << "\n";
+    
+    // Data rows for lab section
+    for (int i = 0; i < chosenCourse.getAssessmentCount(); i++) {
+        const Assessment& assessment = assessments[i];
+
+        if (!assessment.getIsTheory()) {
+
+            bool isComplete = assessment.getIsComplete();
+            
+            // Format ID column
+            std::cout << "| " << std::setw(idWidth) << std::left << (i + 1);
+            
+            // Format Name column
+            std::string name = assessment.getName();
+            if (name.length() > nameWidth) {
+                name = name.substr(0, nameWidth - 3) + "...";
+            }
+            std::cout << " | " << std::setw(nameWidth) << std::left << name;
+            
+            // Format Weight column
+            std::cout << " | " << std::setw(weightWidth - 1) << std::right << assessment.getWeight() << "%";
+            
+            // Format Grade column
+            if (isComplete) {
+                std::cout << " | " << std::setw(gradeWidth - 1) << std::right << assessment.getGrade() << "%";
+            } else {
+                std::cout << " | " << std::setw(gradeWidth) << std::right << "N/A";
+            }
+            
+            // Format Status column
+            std::cout << " | " << std::setw(statusWidth) << std::left 
+                    << (isComplete ? "Complete" : "Pending") << " |";
+            
+            std::cout << "\n";
+        }
+    }
+}
+
+void editCourse(Course& chosenCourse) {
+    std::cout << "Edit course functionality not implemented yet.\n";
+}
+
+void showCourseOptions(Course& chosenCourse) {
+    int choice;
+do {
+    std::cout << "==== Select a Choice ====\n";
+    std::cout << "1. Edit Course\n";
+    std::cout << "2. Calculate Minimum Grades Needed for Target Final Grade\n";
+    std::cout << "3. Simulate Final Grade Based on Hypothetical Scores\n";
+    std::cout << "4. Back to Main Menu\n";
+    std::cout << "=========================\n";
+    
+    choice = getInput<int>("Enter your choice: ");
+    
+    switch (choice) {
+        case 1:
+            clearScreen();
+            editCourse(chosenCourse);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.get();
+            break;
+            
+        case 2:
+            clearScreen();
+            {
+                std::cout << "My grade so far: " << chosenCourse.calculateGradeSoFar() << std::endl;
+                double goal = getInput<double>("What's your goal final grade (%): ");
+                std::vector<Assessment> resultingAssessments = chosenCourse.calculateRequiredGrades(goal);
+                viewAssessmentsDetails(chosenCourse, resultingAssessments);
+            }
+            std::cout << "\nPress Enter to continue...";
+            std::cin.get();
+            break;
+            
+        case 3:
+            clearScreen();
+            chosenCourse.calculateWhatIf();
+            std::cout << "\nPress Enter to continue...";
+            std::cin.get();
+            break;
+        case 4:
+            clearScreen();
+            break;
+            
+        default:
+            std::cout << "Invalid choice. Please try again.\n";
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+    }
+} while (choice != 4);
 }
 
 void viewCourseDetails(CourseManager& manager) {
@@ -136,126 +326,15 @@ void viewCourseDetails(CourseManager& manager) {
 
     std::string horizontalLine(totalWidth, '-');
     
-    std::cout << "\nAssessments:\n";
-    std::cout << horizontalLine << "\n";
-    
     if (chosenCourse.getAssessmentCount() > 0) {
-        
-        //theory section calculate
-        double theoryGrade = chosenCourse.calculateSectionGradeSoFar(true);
-
-        // Header row
-        std::cout << "| " << std::setw(idWidth) << std::left << "#"
-                  << " | " << std::setw(nameWidth-8) << std::left << "Theory" 
-                  << "(" << std::fixed << std::setprecision(2) << theoryGrade << "%)"
-                  << " | " << std::setw(weightWidth) << std::right << "Weight"
-                  << " | " << std::setw(gradeWidth) << std::right << "Grade"
-                  << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
-                  << "\n";
-        
-        std::cout << horizontalLine << "\n";
-        
-        // Data rows for theory section
-        for (int i = 0; i < chosenCourse.getAssessmentCount(); i++) {
-            const Assessment& assessment = assessments[i];
-
-            if (assessment.getIsTheory()) {
-
-                bool isComplete = assessment.getIsComplete();
-                
-                // Format ID column
-                std::cout << "| " << std::setw(idWidth) << std::left << (i + 1);
-                
-                // Format Name column
-                std::string name = assessment.getName();
-                if (name.length() > nameWidth) {
-                    name = name.substr(0, nameWidth - 3) + "...";
-                }
-                std::cout << " | " << std::setw(nameWidth) << std::left << name;
-                
-                // Format Weight column
-                std::cout << " | " << std::setw(weightWidth - 1) << std::right << assessment.getWeight() << "%";
-                
-                // Format Grade column
-                if (isComplete) {
-                    std::cout << " | " << std::setw(gradeWidth - 1) << std::right << assessment.getGrade() << "%";
-                } else {
-                    std::cout << " | " << std::setw(gradeWidth) << std::right << "N/A";
-                }
-                
-                // Format Status column
-                std::cout << " | " << std::setw(statusWidth) << std::left 
-                        << (isComplete ? "Complete" : "Pending") << " |";
-                
-                std::cout << "\n";
-            }
-        }
-
-            double labGrade = chosenCourse.calculateSectionGradeSoFar(false);
-            // Header row
-            std::cout << horizontalLine << "\n";
-            std::cout << "| " << std::setw(idWidth) << std::left << "#"
-            << " | " << std::setw(nameWidth-8) << std::left << "Lab" 
-            << "(" << std::fixed << std::setprecision(2) << labGrade << "%)"
-            << " | " << std::setw(weightWidth) << std::right << "Weight"
-            << " | " << std::setw(gradeWidth) << std::right << "Grade"
-            << " | " << std::setw(statusWidth) << std::left << "Status" << " |"
-            << "\n";
-
-            std::cout << horizontalLine << "\n";
-        
-        // Data rows for lab section
-        for (int i = 0; i < chosenCourse.getAssessmentCount(); i++) {
-            const Assessment& assessment = assessments[i];
-
-            if (!assessment.getIsTheory()) {
-
-                bool isComplete = assessment.getIsComplete();
-                
-                // Format ID column
-                std::cout << "| " << std::setw(idWidth) << std::left << (i + 1);
-                
-                // Format Name column
-                std::string name = assessment.getName();
-                if (name.length() > nameWidth) {
-                    name = name.substr(0, nameWidth - 3) + "...";
-                }
-                std::cout << " | " << std::setw(nameWidth) << std::left << name;
-                
-                // Format Weight column
-                std::cout << " | " << std::setw(weightWidth - 1) << std::right << assessment.getWeight() << "%";
-                
-                // Format Grade column
-                if (isComplete) {
-                    std::cout << " | " << std::setw(gradeWidth - 1) << std::right << assessment.getGrade() << "%";
-                } else {
-                    std::cout << " | " << std::setw(gradeWidth) << std::right << "N/A";
-                }
-                
-                // Format Status column
-                std::cout << " | " << std::setw(statusWidth) << std::left 
-                        << (isComplete ? "Complete" : "Pending") << " |";
-                
-                std::cout << "\n";
-            }
-        }
-
-            
+        viewAssessmentsDetails(chosenCourse, assessments);
     }
         
         std::cout << horizontalLine << "\n";
         
         // Summary row 
         std::stringstream gradeStream;
-        gradeStream << std::fixed << std::setprecision(2) << chosenCourse.calculateGradeSoFar();
-        std::string gradeText = "My grade so far: " + gradeStream.str() + "%";
-
         std::stringstream weightStream;
-        weightStream << std::fixed << std::setprecision(2) << chosenCourse.getTotalWeight();
-        std::string weightText = " (based on " + weightStream.str() + "% of course weight)";
-        
-        std::cout << "| " << std::left << gradeText << weightText
-                 << std::string(totalWidth - gradeText.length() - 39, ' ') << " |\n";
         
         std::stringstream overallGradeStream;
         std::string overallGradeText;
@@ -263,7 +342,14 @@ void viewCourseDetails(CourseManager& manager) {
             overallGradeStream << std::fixed << std::setprecision(2) << chosenCourse.calculateOverallGrade();
             overallGradeText = "Overall Grade: " + overallGradeStream.str() + "%";
         } else {
-            overallGradeStream << std::fixed << std::setprecision(2) << chosenCourse.calculateOverallGrade();
+            gradeStream << std::fixed << std::setprecision(2) << chosenCourse.calculateGradeSoFar();
+            std::string gradeText = "My grade so far: " + gradeStream.str() + "%";
+    
+            weightStream << std::fixed << std::setprecision(2) << chosenCourse.getTotalWeight();
+            std::string weightText = " (based on " + weightStream.str() + "% of course weight)";
+            
+            std::cout << "| " << std::left << gradeText << weightText
+                     << std::string(totalWidth - gradeText.length() - 39, ' ') << " |\n";
             overallGradeText = "Invalid Total Weight: Total weighting must equal to 100%";
         }
         
@@ -271,6 +357,9 @@ void viewCourseDetails(CourseManager& manager) {
                   << std::string(totalWidth - overallGradeText.length() - 4, ' ') << " |\n";
                   
         std::cout << horizontalLine << "\n";
+
+        //course menu
+        showCourseOptions(chosenCourse);
 }
 
 // Main menu function
@@ -308,7 +397,6 @@ void showMainMenu(CourseManager& manager) {
                 viewCourseDetails(manager);
                 std::cout << "\nPress Enter to continue...";
                 std::cin.get();
-                break;
                 break;
                 
             case 4:

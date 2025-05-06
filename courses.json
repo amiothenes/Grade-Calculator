@@ -26,6 +26,74 @@
             ],
             "courseCode": "ELE635",
             "isA5050Course": true
+        },
+        {
+            "assessments": [
+                {
+                    "grade": 89.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab Final",
+                    "weight": 10.0
+                },
+                {
+                    "grade": 90.0,
+                    "isComplete": true,
+                    "isTheory": true,
+                    "name": "Midterm",
+                    "weight": 40.0
+                },
+                {
+                    "grade": 78.0,
+                    "isComplete": true,
+                    "isTheory": true,
+                    "name": "Exam",
+                    "weight": 50.0
+                }
+            ],
+            "courseCode": "CPS688",
+            "isA5050Course": false
+        },
+        {
+            "assessments": [
+                {
+                    "grade": 99.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab 1",
+                    "weight": 10.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "isTheory": false,
+                    "name": "Lab 2",
+                    "weight": 10.0
+                },
+                {
+                    "grade": 56.0,
+                    "isComplete": true,
+                    "isTheory": true,
+                    "name": "Midterm",
+                    "weight": 30.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "isTheory": true,
+                    "name": "Exam",
+                    "weight": 45.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "isTheory": true,
+                    "name": "Quiz",
+                    "weight": 5.0
+                }
+            ],
+            "courseCode": "XXX",
+            "isA5050Course": false
         }
     ]
 }

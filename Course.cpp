@@ -127,3 +127,90 @@ double Course::calculateSectionGradeSoFar(bool isTheory) const {
     return std::round(result * 100) / 100; //round two dec pts
 }
 
+std::vector<Assessment> Course::calculateRequiredGrades(double goalGrade) const {
+
+    const double threshold = 0.1; //how close is the projection to the goal
+    const double interval = 0.5; // increment interval
+
+    if (isTotalWeightValid()) {
+        return getAllAssessments(); // returns same
+    }
+
+    double gradeSoFar = calculateGradeSoFar();
+    std::vector<Assessment> assessmentsCopy = getAllAssessments();
+    
+    if (std::abs(goalGrade - gradeSoFar) < threshold) {
+        return assessmentsCopy;
+    }
+    
+    double increment;
+    
+    auto calculateProjectedGrade = [](const std::vector<Assessment>& assessments) -> double {
+        double weightedSum = 0.0;
+        double totalWeight = 0.0;
+        
+        for (const Assessment& assessment : assessments) {
+            // Include all assessments in the calculation
+            weightedSum += assessment.getGrade() * assessment.getWeight();
+            totalWeight += assessment.getWeight();
+        }
+        
+        if (totalWeight == 0.0) {
+            return 0.0;
+        }
+        
+        return std::round((weightedSum / 100) * 100) / 100; // Round to 2 decimal places
+    };
+    
+    // Initial setup for incomplete assessments
+    for (Assessment& assessment : assessmentsCopy) {
+        if (!assessment.getIsComplete()) {
+            // Start with a reasonable grade if currently 0
+            if (assessment.getGrade() == 0.0) {
+                assessment.setGrade(50.0);
+            }
+        }
+    }
+    
+    double projectedGrade = calculateProjectedGrade(assessmentsCopy);
+    
+    int maxIterations = 9999; // Safety against infinite loops
+    int iteration = 0;
+    
+    while (std::abs(goalGrade - projectedGrade) > threshold && iteration < maxIterations) {
+        for (Assessment& assessment : assessmentsCopy) {
+            if (!assessment.getIsComplete()) {
+                // Update the grade
+                increment = (goalGrade > projectedGrade) ? interval : -interval;
+                double newGrade = assessment.getGrade() + increment;
+                
+                // Keep grades within reasonable bounds (0-100%)
+                if (newGrade >= 0.0 && newGrade <= 100.0) {
+                    assessment.setGrade(newGrade);
+                }
+            }
+        }
+        
+        // Recalculate the projected grade
+        projectedGrade = calculateProjectedGrade(assessmentsCopy);
+        iteration++;
+        std::cout << "Iteration: " << iteration << ", Projected Grade: " << projectedGrade << "%" << std::endl;
+    }
+    
+    //set all to now completed for analysis printing
+    for (Assessment& assessment : assessmentsCopy) {
+        if (!assessment.getIsComplete()) {
+            assessment.setIsComplete(true);
+        }
+    }
+
+    if (iteration >= maxIterations) {
+        return std::vector<Assessment>();
+    }
+
+    return assessmentsCopy;
+}
+
+std::vector<Assessment> Course::calculateWhatIf() const {
+
+}
