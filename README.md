@@ -41,3 +41,7 @@ Install Grade-Calculator
 - Statistical analysis of performance trends
 - GPA calculation across multiple courses
 - Export to CSV/PDF for reports
+
+## Acknowledgements
+
+This project makes use of the [JSON for Modern C++](https://github.com/nlohmann/json) library by [Niels Lohmann](https://github.com/nlohmann). I am grateful for this excellent library that simplifies working with JSON in C++.
