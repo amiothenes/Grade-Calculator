@@ -9,11 +9,11 @@ A simple C++ application that helps students track, simulate, and optimize their
 
 ## Screenshots
 
-![App Screenshot](https://i.imgur.com/KGxsoRS.png)
+<img src="https://i.imgur.com/KGxsoRS.png" alt="Main Menu" width="500"/>
 
-![App Screenshot](https://i.imgur.com/WPc3jUH.png)
+<img src="https://i.imgur.com/WPc3jUH.png" alt="Course List" width="500"/>
 
-![App Screenshot](https://i.imgur.com/Nj2yx1q.png)
+<img src="https://i.imgur.com/Nj2yx1q.png" alt="Course Overview" width="500"/>
 
 ## Installation
 
