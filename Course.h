@@ -33,13 +33,20 @@ public:
     void removeAssessment(int index);
     Assessment& getAssessment(int index);
 
+    void updateAssessmentName(int index, const std::string& newName);
+    void updateAssessmentWeight(int index, double newWeight);
+    void updateAssessmentType(int index, bool isTheory);
+    void updateAssessmentCompletionStatus(int index, bool isComplete);
+    void updateAssessmentGrade(int index, double newGrade);
+
     double getTotalWeight() const;
     int getAssessmentCount() const;
+    int getIncompleteAssessmentCount() const;
     bool isTotalWeightValid() const;
-    double calculateOverallGrade() const;
+    double calculateOverallGrade(bool careForComplete) const;
 
-    double calculateGradeSoFar() const;
-    double calculateSectionGradeSoFar(bool isTheory) const;
+    double calculateGradeSoFar(bool careForComplete) const;
+    double calculateSectionGradeSoFar(bool isTheory, bool careForComplete) const;
 
     std::vector<Assessment> calculateRequiredGrades(double goal) const;
     std::vector<Assessment> calculateWhatIf() const;

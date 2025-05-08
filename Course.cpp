@@ -15,6 +15,36 @@ std::vector<Assessment> Course::getAllAssessments() const {
     return assessments;
 }
 
+void Course::updateAssessmentName(int index, const std::string& newName) {
+    if (index >= 0 && index < static_cast<int>(assessments.size())) {
+        assessments[index].setName(newName);
+    }
+}
+
+void Course::updateAssessmentWeight(int index, double newWeight) {
+    if (index >= 0 && index < static_cast<int>(assessments.size())) {
+        assessments[index].setWeight(newWeight);
+    }
+}
+
+void Course::updateAssessmentType(int index, bool isTheory) {
+    if (index >= 0 && index < static_cast<int>(assessments.size())) {
+        assessments[index].setIsTheory(isTheory);
+    }
+}
+
+void Course::updateAssessmentCompletionStatus(int index, bool isComplete) {
+    if (index >= 0 && index < static_cast<int>(assessments.size())) {
+        assessments[index].setIsComplete(isComplete);
+    }
+}
+
+void Course::updateAssessmentGrade(int index, double newGrade) {
+    if (index >= 0 && index < static_cast<int>(assessments.size())) {
+        assessments[index].setGrade(newGrade);
+    }
+}
+
 bool Course::getIsA5050Course() const {
     return isA5050Course;
 }
@@ -50,6 +80,16 @@ int Course::getAssessmentCount() const {
     return assessments.size();
 }
 
+int Course::getIncompleteAssessmentCount() const {
+    int count = 0;
+    for (const Assessment& assessment : assessments) {
+        if (!assessment.getIsComplete()) {
+            count++;
+        }
+    }
+    return count;
+}
+
 double Course::getTotalWeight() const {
     double totalWeight = 0.0;
 
@@ -67,12 +107,12 @@ bool Course::isTotalWeightValid() const {
     return totalWeight == 100.0;
 }
 
-double Course::calculateOverallGrade() const {
+double Course::calculateOverallGrade(bool careForComplete) const {
     double myGradesWeighted = 0.0;
     double totalWeight = 0.0;
 
     for(const Assessment& assessment : assessments) {
-        if (assessment.getIsComplete()) {
+        if (!careForComplete || assessment.getIsComplete()) {
             myGradesWeighted += assessment.getGrade() * assessment.getWeight();
             totalWeight += assessment.getWeight();
         }
@@ -82,17 +122,17 @@ double Course::calculateOverallGrade() const {
         return 0.0;
     }
 
-    double result = myGradesWeighted / 100; //100 is total
+    double result = myGradesWeighted / 100; // 100 is total
 
-    return std::round(result * 100) / 100; //round two dec pts
+    return std::round(result * 100) / 100; // round two decimal points
 }
 
-double Course::calculateGradeSoFar() const {
+double Course::calculateGradeSoFar(bool careForComplete) const {
     double myGradesWeighted = 0.0;
     double totalWeight = 0.0;
 
     for(const Assessment& assessment : assessments) {
-        if (assessment.getIsComplete()) {
+        if (!careForComplete || assessment.getIsComplete()) {
             myGradesWeighted += assessment.getGrade() * assessment.getWeight();
             totalWeight += assessment.getWeight();
         }
@@ -107,12 +147,12 @@ double Course::calculateGradeSoFar() const {
     return std::round(result * 100) / 100; //round two dec pts
 }
 
-double Course::calculateSectionGradeSoFar(bool isTheory) const {
+double Course::calculateSectionGradeSoFar(bool isTheory, bool careForComplete) const {
     double myGradesWeighted = 0.0;
     double totalWeight = 0.0;
 
     for(const Assessment& assessment : assessments) {
-        if (assessment.getIsComplete() && assessment.getIsTheory() == isTheory) {
+        if ((!careForComplete || assessment.getIsComplete()) && assessment.getIsTheory() == isTheory) {
             myGradesWeighted += assessment.getGrade() * assessment.getWeight();
             totalWeight += assessment.getWeight();
         }
@@ -136,7 +176,7 @@ std::vector<Assessment> Course::calculateRequiredGrades(double goalGrade) const 
         return getAllAssessments(); // returns same
     }
 
-    double gradeSoFar = calculateGradeSoFar();
+    double gradeSoFar = calculateOverallGrade(true);
     std::vector<Assessment> assessmentsCopy = getAllAssessments();
     
     if (std::abs(goalGrade - gradeSoFar) < threshold) {
@@ -174,7 +214,7 @@ std::vector<Assessment> Course::calculateRequiredGrades(double goalGrade) const 
     
     double projectedGrade = calculateProjectedGrade(assessmentsCopy);
     
-    int maxIterations = 9999; // Safety against infinite loops
+    int maxIterations = 1000; // Safety against infinite loops
     int iteration = 0;
     
     while (std::abs(goalGrade - projectedGrade) > threshold && iteration < maxIterations) {
@@ -194,15 +234,14 @@ std::vector<Assessment> Course::calculateRequiredGrades(double goalGrade) const 
         // Recalculate the projected grade
         projectedGrade = calculateProjectedGrade(assessmentsCopy);
         iteration++;
-        std::cout << "Iteration: " << iteration << ", Projected Grade: " << projectedGrade << "%" << std::endl;
     }
     
     //set all to now completed for analysis printing
-    for (Assessment& assessment : assessmentsCopy) {
-        if (!assessment.getIsComplete()) {
-            assessment.setIsComplete(true);
-        }
-    }
+    // for (Assessment& assessment : assessmentsCopy) {
+    //     if (!assessment.getIsComplete()) {
+    //         assessment.setIsComplete(true);
+    //     }
+    // }
 
     if (iteration >= maxIterations) {
         return std::vector<Assessment>();
@@ -212,5 +251,7 @@ std::vector<Assessment> Course::calculateRequiredGrades(double goalGrade) const 
 }
 
 std::vector<Assessment> Course::calculateWhatIf() const {
+    std::vector<Assessment> assessmentsCopy = getAllAssessments();
 
+    return assessmentsCopy;
 }
