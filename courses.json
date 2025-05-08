@@ -3,56 +3,84 @@
         {
             "assessments": [
                 {
-                    "grade": 90.0,
+                    "grade": 83.3,
                     "isComplete": true,
-                    "isTheory": false,
-                    "name": "Lab",
-                    "weight": 40.0
+                    "isTheory": true,
+                    "name": "Midterm 1",
+                    "weight": 30.0
                 },
                 {
                     "grade": 90.0,
                     "isComplete": true,
                     "isTheory": true,
-                    "name": "Midterm",
+                    "name": "Midterm 2",
                     "weight": 30.0
                 },
                 {
                     "grade": 0.0,
                     "isComplete": false,
                     "isTheory": true,
-                    "name": "Exam",
-                    "weight": 30.0
-                }
-            ],
-            "courseCode": "ELE635",
-            "isA5050Course": true
-        },
-        {
-            "assessments": [
-                {
-                    "grade": 89.0,
-                    "isComplete": true,
-                    "isTheory": false,
-                    "name": "Lab Final",
-                    "weight": 10.0
-                },
-                {
-                    "grade": 90.0,
-                    "isComplete": true,
-                    "isTheory": true,
-                    "name": "Midterm",
+                    "name": "Final",
                     "weight": 40.0
-                },
-                {
-                    "grade": 78.0,
-                    "isComplete": true,
-                    "isTheory": true,
-                    "name": "Exam",
-                    "weight": 50.0
                 }
             ],
             "courseCode": "CPS688",
             "isA5050Course": false
+        },
+        {
+            "assessments": [
+                {
+                    "grade": 78.8,
+                    "isComplete": true,
+                    "isTheory": true,
+                    "name": "Midterm",
+                    "weight": 25.0
+                },
+                {
+                    "grade": 0.0,
+                    "isComplete": false,
+                    "isTheory": true,
+                    "name": "Final",
+                    "weight": 45.0
+                },
+                {
+                    "grade": 95.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab 1",
+                    "weight": 6.0
+                },
+                {
+                    "grade": 91.3,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab 2",
+                    "weight": 6.0
+                },
+                {
+                    "grade": 87.5,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Lab 3",
+                    "weight": 6.0
+                },
+                {
+                    "grade": 85.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "6",
+                    "weight": 6.0
+                },
+                {
+                    "grade": 95.0,
+                    "isComplete": true,
+                    "isTheory": false,
+                    "name": "Final Report",
+                    "weight": 6.0
+                }
+            ],
+            "courseCode": "ELE635",
+            "isA5050Course": true
         }
     ]
 }

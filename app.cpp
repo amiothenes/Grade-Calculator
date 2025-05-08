@@ -54,12 +54,26 @@ void addNewCourse(CourseManager& manager) {
     // Ask user if they want to add assessments now
     if (getInput<char>("Add assessments now? (y/n): ") == 'y') {
         int numAssessments = getInput<int>("How many assessments to add? ");
-        
+        double remainingWeight = 100.0;
+
         for (int i = 0; i < numAssessments; i++) {
             std::cout << "\nAssessment #" << (i + 1) << std::endl;
+            std::cout << "Remaining weight: " << remainingWeight << "%" << std::endl;
+
             std::string name = getStringInput("Name: ");
             double weight = getInput<double>("Weight (%): ");
-            bool isTheory = getInput<char>("Is this a theory assessment? (y/n for lab): ") == 'y';
+
+            while (weight > remainingWeight || weight <= 0) {
+                std::cout << "Invalid weight. It must be between 0 and " << remainingWeight << "%.\n";
+                weight = getInput<double>("Weight (%): ");
+            }
+
+            bool isTheory;
+            if (isA5050Course) {
+                isTheory = getInput<char>("Is this a theory assessment? (y/n for lab): ") == 'y';
+            } else {
+                isTheory = true;
+            }
 
             bool isComplete = getInput<char>("Is this assessment complete? (y/n): ") == 'y';
 
@@ -70,6 +84,7 @@ void addNewCourse(CourseManager& manager) {
             
             Assessment newAssessment(name, weight, grade, isTheory, isComplete);
             newCourse.addAssessment(newAssessment);
+            remainingWeight -= weight;
         }
     }
     
@@ -101,7 +116,7 @@ void displayCourses(const CourseManager& manager) {
     }
 }
 
-void viewAssessmentsDetails(Course& chosenCourse, const std::vector<Assessment>& assessments) {
+void viewAssessmentsDetails(Course& chosenCourse, const std::vector<Assessment>& assessments, bool careForComplete) {
     bool is5050Course = chosenCourse.getIsA5050Course();
 
     const int idWidth = 3;
@@ -121,7 +136,7 @@ void viewAssessmentsDetails(Course& chosenCourse, const std::vector<Assessment>&
     // Header row
     if (is5050Course) {
         // Display with section grade for 50/50 courses
-        double theoryGrade = chosenCourse.calculateSectionGradeSoFar(true, true);
+        double theoryGrade = chosenCourse.calculateSectionGradeSoFar(true, careForComplete);
         std::cout << "| " << std::setw(idWidth) << std::left << "#"
                   << " | " << std::setw(nameWidth-8) << std::left << "Theory" 
                   << "(" << std::fixed << std::setprecision(2) << theoryGrade << "%)"
@@ -181,7 +196,7 @@ void viewAssessmentsDetails(Course& chosenCourse, const std::vector<Assessment>&
         std::cout << horizontalLine << "\n";
         // Header row
         if (is5050Course) {
-            double labGrade = chosenCourse.calculateSectionGradeSoFar(false, true);
+            double labGrade = chosenCourse.calculateSectionGradeSoFar(false, careForComplete);
             std::cout << "| " << std::setw(idWidth) << std::left << "#"
                       << " | " << std::setw(nameWidth-8) << std::left << "Lab" 
                       << "(" << std::fixed << std::setprecision(2) << labGrade << "%)"
@@ -240,7 +255,7 @@ void viewAssessmentsDetails(Course& chosenCourse, const std::vector<Assessment>&
 
 }
 
-void editCourse(Course& chosenCourse) {
+void editCourse(Course& chosenCourse, CourseManager& manager) {
     int choice;
     do {
         clearScreen();
@@ -254,13 +269,13 @@ void editCourse(Course& chosenCourse) {
         std::cout << "=============================\n";
         
         choice = getInput<int>("Enter your choice: ");
-        
         switch (choice) {
             case 1: {
                 // Rename course
                 std::string newCode = getStringInput("Enter new course code: ");
                 chosenCourse.setCourseCode(newCode);
                 std::cout << "Course code updated successfully!\n";
+                manager.saveToFile();
                 pauseForUser();
                 break;
             }
@@ -282,6 +297,7 @@ void editCourse(Course& chosenCourse) {
                 Assessment newAssessment(name, weight, grade, isTheory, isComplete);
                 chosenCourse.addAssessment(newAssessment);
                 std::cout << "Assessment added successfully!\n";
+                manager.saveToFile();
                 pauseForUser();
                 break;
             }
@@ -317,7 +333,7 @@ void editCourse(Course& chosenCourse) {
                     break;
                 }
                 
-                assessmentIndex--; // Convert to 0-based index
+                assessmentIndex--;
                 
                 // Display editable properties
                 clearScreen();
@@ -374,6 +390,7 @@ void editCourse(Course& chosenCourse) {
                 }
                 
                 std::cout << "Assessment updated successfully!\n";
+                manager.saveToFile();
                 pauseForUser();
                 break;
             }
@@ -411,6 +428,7 @@ void editCourse(Course& chosenCourse) {
                 if (confirm == 'y') {
                     chosenCourse.removeAssessment(assessmentIndex - 1);
                     std::cout << "Assessment deleted successfully!\n";
+                    manager.saveToFile(); // Save changes to file
                 } else {
                     std::cout << "Deletion cancelled.\n";
                 }
@@ -429,6 +447,7 @@ void editCourse(Course& chosenCourse) {
                 if (confirm == 'y') {
                     chosenCourse.setIsA5050Course(!isA5050Course);
                     std::cout << "Course type updated successfully!\n";
+                    manager.saveToFile();
                 }
                 
                 pauseForUser();
@@ -446,7 +465,7 @@ void editCourse(Course& chosenCourse) {
     } while (choice != 6);
 }
 
-void showCourseOptions(Course& chosenCourse) {
+void showCourseOptions(Course& chosenCourse, CourseManager& manager) {
     int choice;
 do {
     clearScreen();
@@ -461,8 +480,7 @@ do {
     
     switch (choice) {
         case 1:
-            editCourse(chosenCourse);
-            pauseForUser();
+            editCourse(chosenCourse, manager);
             break;
             
         case 2:
@@ -484,7 +502,7 @@ do {
                                      resultingAssessments, 
                                      chosenCourse.getIsA5050Course());
         
-                    viewAssessmentsDetails(tempCourse, resultingAssessments);
+                    viewAssessmentsDetails(tempCourse, resultingAssessments, false);
         
                     const int idWidth = 3;
                     const int nameWidth = 25;
@@ -569,7 +587,7 @@ do {
                               
                     // Show the detailed breakdown
                     std::cout << "\nDetailed breakdown:\n";
-                    viewAssessmentsDetails(tempCourse, simulationAssessments);
+                    viewAssessmentsDetails(tempCourse, simulationAssessments, false);
 
                     const int idWidth = 3;
                     const int nameWidth = 25;
@@ -655,7 +673,7 @@ void viewCourseDetails(CourseManager& manager) {
     std::string horizontalLine(totalWidth, '-');
     
     if (chosenCourse.getAssessmentCount() > 0) {
-        viewAssessmentsDetails(chosenCourse, assessments);
+        viewAssessmentsDetails(chosenCourse, assessments, true);
     }
                 
         // Summary row 
@@ -686,7 +704,7 @@ void viewCourseDetails(CourseManager& manager) {
 
         //course menu
         pauseForUser();
-        showCourseOptions(chosenCourse);
+        showCourseOptions(chosenCourse, manager);
 }
 
 void deleteCourse(CourseManager& manager) {
@@ -725,7 +743,6 @@ void deleteCourse(CourseManager& manager) {
     } else {
         std::cout << "Deletion cancelled.\n";
     }
-    pauseForUser();
 }
 
 // Main menu function
